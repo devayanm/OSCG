@@ -12,6 +12,9 @@ export async function syncGitHubContribution(userId: string, githubHandle: strin
     const normalizedHandle = githubHandle.toLowerCase().trim();
     if (!normalizedHandle) return { success: false, error: "No GitHub handle provided" };
 
+    console.log(`[Sync] Starting sync for user: ${userId}, handle: ${normalizedHandle}`);
+
+
     // 1. Ownership & Role check
     const { data: profile } = await supabaseAdmin
         .from("profiles")
@@ -86,6 +89,9 @@ export async function syncGitHubContribution(userId: string, githubHandle: strin
         const query = `involves:${normalizedHandle.replace('@', '')} is:closed`;
         const searchUrl = `https://api.github.com/search/issues?q=${encodeURIComponent(query)}&per_page=100`;
 
+        console.log(`[Sync] Fetching URL: ${searchUrl}`);
+        console.log(`[Sync] Token present: ${!!GITHUB_TOKEN}`);
+
         const response = await fetch(searchUrl, {
             headers: GITHUB_TOKEN ? {
                 Authorization: `token ${GITHUB_TOKEN}`,
@@ -104,14 +110,38 @@ export async function syncGitHubContribution(userId: string, githubHandle: strin
 
         const searchData = await response.json();
         const items = searchData.items || [];
+        console.log(`[Sync] Found ${items.length} items from GitHub.`);
 
         // 3. Process Items: Group by Repo & Item Type
         const prs: any[] = [];
         const issuesByRepo: Record<string, any[]> = {};
 
+        const competitionRepos = PROJECTS.map(p => {
+            try {
+                const url = p.githubRepo.trim().replace(/\/$/, "").replace(/\.git$/, "");
+                const parts = url.split("/");
+                if (parts.length >= 2) {
+                    const owner = parts[parts.length - 2].toLowerCase();
+                    const repo = parts[parts.length - 1].toLowerCase();
+                    return `${owner}/${repo}`;
+                }
+                return null;
+            } catch {
+                return null;
+            }
+        }).filter(Boolean) as string[];
+
+        // Debug: Log parsed repos to ensure Innovision is there
+        console.log('[Sync] Competition Repos:', competitionRepos);
+
         for (const item of items) {
+            // Parse repo from URL (api.github.com/repos/OWNER/REPO/...)
             const repoUrl = (item.repository_url || "").toLowerCase();
             const repoSuffix = repoUrl.split("/repos/")[1];
+
+            // Debug: Log what we are checking against
+            // console.log(`[Sync] Checking Item: ${repoSuffix} | Included: ${competitionRepos.includes(repoSuffix)}`);
+
             if (!repoSuffix || !competitionRepos.includes(repoSuffix)) continue;
 
             const isPR = !!item.pull_request;
@@ -181,6 +211,8 @@ export async function syncGitHubContribution(userId: string, githubHandle: strin
             (difficultyCounts.hard * 30) +
             (difficultyCounts.exp * 50);
 
+        console.log(`[Sync] Calculated Score: ${calculatedScore}, Merged PRs: ${mergedCount}`);
+
         // 5. Update Database
         // We use Math.max to ensure that manual score updates by admins are preserved
         // if the calculated score from GitHub is lower.
@@ -196,9 +228,11 @@ export async function syncGitHubContribution(userId: string, githubHandle: strin
             .eq("id", userId);
 
         if (error) {
-            console.error("Database Update Error:", error);
+            console.error("[Sync] Database Update Error:", error);
             return { success: false, error: "Failed to update database" };
         }
+
+        console.log(`[Sync] Database Updated Successfully for user ${userId}`);
 
         return {
             success: true,
