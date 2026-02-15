@@ -45,6 +45,8 @@ const EventTimeline = () => {
       date: "6th February, 2026",
       location: "Virtual",
       attendees: "300+",
+      link: "https://www.youtube.com/live/wPnhpzGozyA",
+      buttonText: "Watch Now",
     },
     {
       status: "Open" as const,
@@ -53,6 +55,9 @@ const EventTimeline = () => {
       date: "9th February, 2026",
       location: "Virtual",
       attendees: "800+",
+      link: "https://docs.google.com/document/d/1O61yDFdRpNInNGem6A4gOx3Z0rX2Lcr7ONNEuXEmpyY/edit?tab=t.0",
+      buttonText: "Explore Projects",
+
     },
     {
       title: "Mid-Program Evaluation & Feedback",
