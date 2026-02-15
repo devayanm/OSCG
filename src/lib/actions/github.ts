@@ -93,7 +93,7 @@ export async function syncGitHubContribution(userId: string, githubHandle: strin
             } : {
                 Accept: "application/vnd.github.v3+json",
             },
-            next: { revalidate: 3600 } // Cache for 1 hour
+            next: { revalidate: 0 } // No cache for immediate updates (Debugging)
         });
 
         if (!response.ok) {
