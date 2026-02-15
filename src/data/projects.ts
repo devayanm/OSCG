@@ -61,7 +61,7 @@ export const PROJECTS: Project[] = [
   {
     title: "Innovision",
     description: "InnoVision is a cutting-edge AI-powered learning platform that dynamically generates structured and engaging courses from any topic. Unlike traditional static courses, InnoVision leverages AI and machine learning to create a flexible, adaptive learning environment tailored to individual learner needs.",
-    githubRepo: "https://github.com/akshay-innovision/Innovision-Open-Source",
+    githubRepo: "https://github.com/ItsVikasA/Innovision-Open-Source.git",
     techStack: ["Next.js", "Firebase", "RazorPay","Google AI Studio"],
     level: "Intermediate",
     category: "Python",
