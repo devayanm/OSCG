@@ -167,3 +167,70 @@ export async function updateUserScore(userId: string, score: number) {
   console.log(`[AUDIT] Score Updated: Admin ${requester.email} (${requester.id}) set score for User ${userId} to ${score}. Status: ${status}`);
   return { success: true };
 }
+
+import { syncGitHubContribution } from "@/lib/actions/github";
+
+export async function syncAllUsers() {
+  try {
+    const { data: users, error } = await supabaseAdmin
+      .from("profiles")
+      .select("id, github")
+      .eq("role", "contributor")
+      .not("github", "is", null);
+
+    if (error) throw error;
+    if (!users || users.length === 0) return { success: true, count: 0 };
+
+    console.log(`[AdminSync] Found ${users.length} contributors to sync.`);
+
+    const BATCH_SIZE = 1;
+    let successCount = 0;
+    let failCount = 0;
+
+    for (let i = 0; i < users.length; i += BATCH_SIZE) {
+      const user = users[i];
+
+      if (user.github) {
+        console.log(`[AdminSync] Syncing user ${i + 1}/${users.length}: ${user.github}`);
+        try {
+          const result = await syncGitHubContribution(user.id, user.github);
+          if (result.success) successCount++;
+          else failCount++;
+        } catch (err) {
+          console.error(`[AdminSync] Error syncing ${user.github}:`, err);
+          failCount++;
+        }
+      }
+
+      if (i + 1 < users.length) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    }
+
+    return { success: true, count: users.length, successCount, failCount };
+
+  } catch (error) {
+    console.error("[AdminSync] Error:", error);
+    return { success: false, error: "Failed to sync users" };
+  }
+}
+
+export async function syncUser(userId: string) {
+  try {
+    const { data: user, error } = await supabaseAdmin
+      .from("profiles")
+      .select("id, github")
+      .eq("id", userId)
+      .single();
+
+    if (error || !user) throw new Error("User not found");
+    if (!user.github) return { success: false, error: "User has no GitHub handle linked" };
+
+    const result = await syncGitHubContribution(user.id, user.github);
+    return result;
+
+  } catch (error: any) {
+    console.error("[AdminSync] Single User Error:", error);
+    return { success: false, error: error.message || "Failed to sync user" };
+  }
+}

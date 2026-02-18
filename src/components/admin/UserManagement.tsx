@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Filter,
+  RefreshCw,
 } from "lucide-react";
 
 import {
@@ -32,7 +33,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { updateUserRole } from "@/lib/actions/admin";
+import { updateUserRole, syncUser } from "@/lib/actions/admin";
 
 interface Profile {
   id: string;
@@ -355,10 +356,32 @@ export default function UserManagement({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-[#11D392] cursor-pointer  hover:bg-transparent hover:text-green-400 rounded-lg border border-[#11D392]/20"
+                            className="h-8 w-8 text-[#11D392] cursor-pointer hover:bg-transparent hover:text-green-400 rounded-lg border border-[#11D392]/20"
                             onClick={() => window.location.href = `mailto:${user.email}`}
                           >
                             <Mail className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-blue-400 cursor-pointer hover:bg-transparent hover:text-blue-300 rounded-lg border border-blue-400/20 ml-2"
+                            onClick={async () => {
+                              const toastId = toast.loading("Syncing user data...");
+                              try {
+                                const result = await syncUser(user.id);
+                                if (result.success) {
+                                  toast.success("User synced successfully", { id: toastId });
+                                  // Optional: Refresh local state if scores are shown, 
+                                  // or just let the next fetch update it.
+                                } else {
+                                  toast.error("Sync failed: " + result.error, { id: toastId });
+                                }
+                              } catch (e) {
+                                toast.error("Sync failed", { id: toastId });
+                              }
+                            }}
+                          >
+                            <RefreshCw className="h-4 w-4" />
                           </Button>
                         </div>
                       </TableCell>
