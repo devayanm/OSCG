@@ -206,10 +206,10 @@ export async function syncGitHubContribution(userId: string, githubHandle: strin
         // Helper to extract difficulty from a context string
         const getDifficulty = (labels: string[], title: string, body: string) => {
             const context = [...labels, title.toLowerCase(), body.toLowerCase()].join(" ");
-            if (/expert|exp|advanced/.test(context)) return 'exp';
-            if (/hard|high/.test(context)) return 'hard';
-            if (/medium|med|intermediate|mid/.test(context)) return 'med';
-            if (/easy|beginner|starter/.test(context)) return 'easy';
+            if (/\b(expert|exp|advanced)\b/.test(context)) return 'exp';
+            if (/\b(hard|high)\b/.test(context)) return 'hard';
+            if (/\b(medium|med|intermediate|mid)\b/.test(context)) return 'med';
+            if (/\b(easy|beginner|starter)\b/.test(context)) return 'easy';
             return 'easy';
         };
 
