@@ -5,7 +5,8 @@ const EventTimeline = () => {
     {
       status: "past" as const,
       title: "Registrations Open",
-      description: "Participants from across the globe can officially register for OSCG’26.",
+      description:
+        "Participants from across the globe can officially register for OSCG’26.",
       date: "1st December, 2025",
       location: "Virtual",
       attendees: "500+",
@@ -13,7 +14,8 @@ const EventTimeline = () => {
     {
       status: "past" as const,
       title: "Mentor Registration Opens",
-      description: "Experienced open-source contributors, industry professionals, and community leaders are invited to register as mentors.",
+      description:
+        "Experienced open-source contributors, industry professionals, and community leaders are invited to register as mentors.",
       date: "10th January, 2026",
       location: "Virtual",
       attendees: "50+",
@@ -23,7 +25,8 @@ const EventTimeline = () => {
     {
       status: "past" as const,
       title: "Project Admin Registration Opens",
-      description: "Open-source organizations, startups, and independent maintainers are invited to onboard their projects.",
+      description:
+        "Open-source organizations, startups, and independent maintainers are invited to onboard their projects.",
       date: "10th January, 2026",
       location: "Virtual",
       attendees: "20+",
@@ -33,7 +36,8 @@ const EventTimeline = () => {
     {
       status: "Open" as const,
       title: "Project Listings Go Live",
-      description: "Registered projects are published on the platform with detailed descriptions, tech stacks, contribution guidelines, and difficulty levels.",
+      description:
+        "Registered projects are published on the platform with detailed descriptions, tech stacks, contribution guidelines, and difficulty levels.",
       date: "5th February, 2026",
       location: "Virtual",
       attendees: "Pending",
@@ -41,7 +45,8 @@ const EventTimeline = () => {
     {
       status: "Open" as const,
       title: "Orientation Session",
-      description: "Introductory sessions, mentor meet-ups, and contributor orientations are conducted to ensure everyone understands workflows, open-source best practices, and collaboration tools.",
+      description:
+        "Introductory sessions, mentor meet-ups, and contributor orientations are conducted to ensure everyone understands workflows, open-source best practices, and collaboration tools.",
       date: "6th February, 2026",
       location: "Virtual",
       attendees: "300+",
@@ -49,26 +54,41 @@ const EventTimeline = () => {
       buttonText: "Watch Now",
     },
     {
-      status: "Open" as const,
-      title: "Contribution Phase Begins",
-      description: "Active development starts as contributors work on issues, features, documentation, design, and research under mentor guidance.",
+      status: "past" as const,
+      title:
+        "Speaker Session: Unlocking On-Device Intelligence with Small Language Models",
+      description:
+        "Speaker: Dishant G.\n\nHow Small Language Models (SLMs) are powering the next generation of efficient, privacy-first AI applications. Learn practical strategies to design, build, and deploy lightweight, scalable AI systems without heavy cloud dependence.\n\nWhat you'll learn:\n- What Small Language Models are and why they matter\n- Benefits of on-device AI: privacy, low latency, and cost efficiency\n- Building lightweight GenAI & conversational systems\n- Architecting scalable solutions with RAG pipelines\n- Practical demos and real-world implementation insights",
       date: "9th February, 2026",
       location: "Virtual",
-      attendees: "800+",
-      link: "https://docs.google.com/document/d/1O61yDFdRpNInNGem6A4gOx3Z0rX2Lcr7ONNEuXEmpyY/edit?tab=t.0",
-      buttonText: "Explore Projects",
-
+      attendees: "200+",
+      link: "https://luma.com/fcdyx6a9",
+      buttonText: "View Session",
+    },
+    {
+      status: "past" as const,
+      title:
+        "Speaker Session: Real-Time PostgreSQL + CDC Architecture for Spatial Analytics and AI in an AI Data Cloud",
+      description:
+        "Speaker: Kamesh Sampath\n\nDeep-dive session on integrating PostgreSQL and PostGIS with Apache-based real-time Change Data Capture (CDC) and open analytics for streaming spatial intelligence at scale.\n\nWhat you'll learn:\n- Streaming changes from PostgreSQL using WAL-based CDC without custom code\n- Transforming and enriching PostGIS data for machine learning\n- Applying real-time predictive techniques to spatial workloads\n- Leveraging NLP to generate insights from streaming data\n- Visualizing end-to-end results using a reproducible open source architecture",
+      date: "18th February, 2026",
+      location: "Virtual",
+      attendees: "150+",
+      link: "https://luma.com/90rqvult",
+      buttonText: "View Session",
     },
     {
       title: "Mid-Program Evaluation & Feedback",
-      description: "Progress is reviewed across projects. Contributors receive feedback, mentors refine guidance strategies, and project admins optimize task distribution to maximize impact.",
+      description:
+        "Progress is reviewed across projects. Contributors receive feedback, mentors refine guidance strategies, and project admins optimize task distribution to maximize impact.",
       date: "20th February, 2026",
       location: "Virtual",
       attendees: "800+",
     },
     {
       title: "Program Wrap-Up & Community Continuation",
-      description: "OSCG’26 concludes with a global wrap-up session highlighting achievements, success stories, and opportunities to continue contributing beyond the program.",
+      description:
+        "OSCG’26 concludes with a global wrap-up session highlighting achievements, success stories, and opportunities to continue contributing beyond the program.",
       date: "25th March, 2026",
       location: "Virtual",
       attendees: "1000+",
@@ -83,7 +103,8 @@ const EventTimeline = () => {
             Event <span className="text-[#4FD1D0]">Timeline</span>
           </h2>
           <p className="text-gray-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto mt-4 px-4">
-            Join us at upcoming events and workshops designed to inspire and connect developers.
+            Join us at upcoming events and workshops designed to inspire and
+            connect developers.
           </p>
         </div>
 
