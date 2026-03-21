@@ -19,7 +19,8 @@ const EventTimeline = () => {
       date: "10th January, 2026",
       location: "Virtual",
       attendees: "50+",
-      link: "https://docs.google.com/forms/d/e/1FAIpQLSebuqxmKNDuIgXYZzbOZ1nhJp38fHxthFGDyDN0j4V6cX3sFQ/viewform?usp=header",
+      link:
+        "https://docs.google.com/forms/d/e/1FAIpQLSebuqxmKNDuIgXYZzbOZ1nhJp38fHxthFGDyDN0j4V6cX3sFQ/viewform?usp=header",
       buttonText: "Become a Mentor",
     },
     {
@@ -30,11 +31,12 @@ const EventTimeline = () => {
       date: "10th January, 2026",
       location: "Virtual",
       attendees: "20+",
-      link: "https://docs.google.com/forms/d/e/1FAIpQLSfnWgjErOia0Kj6IFOeK8zEb8K7NFXUHFr8F4oYsaGC-Qh8OQ/viewform?usp=header",
+      link:
+        "https://docs.google.com/forms/d/e/1FAIpQLSfnWgjErOia0Kj6IFOeK8zEb8K7NFXUHFr8F4oYsaGC-Qh8OQ/viewform?usp=header",
       buttonText: "Become Project Admin",
     },
     {
-      status: "Open" as const,
+      status: "past" as const,
       title: "Project Listings Go Live",
       description:
         "Registered projects are published on the platform with detailed descriptions, tech stacks, contribution guidelines, and difficulty levels.",
@@ -43,10 +45,10 @@ const EventTimeline = () => {
       attendees: "Pending",
     },
     {
-      status: "Open" as const,
-      title: "Orientation Session",
-      description:
-        "Introductory sessions, mentor meet-ups, and contributor orientations are conducted to ensure everyone understands workflows, open-source best practices, and collaboration tools.",
+      status: "past" as const,
+      title: "OSCG'26 Orientation Session",
+      description: "This session introduces Open Source Connect Global (OSCG), explaining what open source is and how participants can contribute to projects. ",
+      sessionnum: "",
       date: "6th February, 2026",
       location: "Virtual",
       attendees: "300+",
@@ -56,28 +58,41 @@ const EventTimeline = () => {
     {
       status: "past" as const,
       title:
-        "Speaker Session: Unlocking On-Device Intelligence with Small Language Models",
-      description:
-        "Speaker: Dishant G.\n\nHow Small Language Models (SLMs) are powering the next generation of efficient, privacy-first AI applications. Learn practical strategies to design, build, and deploy lightweight, scalable AI systems without heavy cloud dependence.\n\nWhat you'll learn:\n- What Small Language Models are and why they matter\n- Benefits of on-device AI: privacy, low latency, and cost efficiency\n- Building lightweight GenAI & conversational systems\n- Architecting scalable solutions with RAG pipelines\n- Practical demos and real-world implementation insights",
+        "Speaker Session 1 : Unlocking on-device intelligence with Small Language Models | Open Source Connect Global 2026",
       date: "9th February, 2026",
       location: "Virtual",
-      attendees: "200+",
-      link: "https://luma.com/fcdyx6a9",
-      buttonText: "View Session",
+      sessionnum: "1",
+      description: "Dishant G. explains how Small Language Models power efficient, privacy-first AI with minimal cloud reliance.Learn to build lightweight GenAI systems and scalable RAG-based solutions with real-world insights.",
+      attendees: "300+",
+      link: "https://www.youtube.com/live/cuInxtp2tGE?si=EZ-15F1B0-SmjMl4",
+      buttonText: "Watch Now",
     },
     {
       status: "past" as const,
       title:
-        "Speaker Session: Real-Time PostgreSQL + CDC Architecture for Spatial Analytics and AI in an AI Data Cloud",
-      description:
-        "Speaker: Kamesh Sampath\n\nDeep-dive session on integrating PostgreSQL and PostGIS with Apache-based real-time Change Data Capture (CDC) and open analytics for streaming spatial intelligence at scale.\n\nWhat you'll learn:\n- Streaming changes from PostgreSQL using WAL-based CDC without custom code\n- Transforming and enriching PostGIS data for machine learning\n- Applying real-time predictive techniques to spatial workloads\n- Leveraging NLP to generate insights from streaming data\n- Visualizing end-to-end results using a reproducible open source architecture",
-      date: "18th February, 2026",
+        "Speaker Session 2 : From Classroom to Code : Building Your First MVP With Open Source",
+      date: "16th February, 2026",
       location: "Virtual",
-      attendees: "150+",
-      link: "https://luma.com/90rqvult",
-      buttonText: "View Session",
+      description: "Speaker Tarun Gupta walks you through turning ideas into reality by building your first MVP using open-source tools and communities.",
+      sessionnum: "2",
+      attendees: "300+",
+      link: "https://www.youtube.com/live/b7sLMzooDdo?si=yEGfoDx1hX5YPSjq",
+      buttonText: "Watch Now",
     },
     {
+      status: "past" as const,
+      title:
+        "Speaker Session 3 : From Milliseconds to Insights: Real-Time PostgreSQL + CDC Architecture for Spatial Analytics and AI",
+      date: "18th February, 2026",
+      description: "Speaker Kamesh Sampath delivers a deep dive into building real-time spatial intelligence using PostgreSQL, PostGIS, and Apache-based CDC.",
+      location: "Virtual",
+      sessionnum: "3",
+      attendees: "300+",
+      link: "https://www.youtube.com/live/9rR4cyCs_rw?si=JCEgQ_bQR085R97k",
+      buttonText: "Watch Now",
+    },
+    {
+      status: "past" as const,
       title: "Mid-Program Evaluation & Feedback",
       description:
         "Progress is reviewed across projects. Contributors receive feedback, mentors refine guidance strategies, and project admins optimize task distribution to maximize impact.",
@@ -86,12 +101,37 @@ const EventTimeline = () => {
       attendees: "800+",
     },
     {
+      status: "past" as const,
+      title: "Speaker Session 4 : My Learning From Community : No one is an island",
+      date: "21th February, 2026",
+      description: "Speaker Nitin SS shares powerful insights on the importance of community in personal and professional growth.",
+      location: "Virtual",
+      sessionnum: "4",
+      attendees: "300+",
+      link: "https://www.youtube.com/live/9rR4cyCs_rw?si=JCEgQ_bQR085R97k",
+      buttonText: "Watch Now",
+    },
+    {
+      status: "past" as const,
+      title: "Speaker Session 5 : Building a Strong Brand In the Open-Source Ecosystem",
+      date: "26th February, 2026",
+      description: "Speaker Olena Yara explores how to build a strong and authentic personal brand within the open-source ecosystem.",
+      location: "Virtual",
+      sessionnum: "5",
+      attendees: "300+",
+      link: "https://www.youtube.com/live/rKMMKQjKysE?si=SvDGFPieHbZ8kJsF",
+      buttonText: "Watch Now",
+    },
+    {
+      status: "Open" as const,
       title: "Program Wrap-Up & Community Continuation",
       description:
         "OSCG’26 concludes with a global wrap-up session highlighting achievements, success stories, and opportunities to continue contributing beyond the program.",
-      date: "25th March, 2026",
+      date: "3rd March, 2026",
       location: "Virtual",
       attendees: "1000+",
+      link: "https://www.youtube.com/@open-source-connect/streams",
+      buttonText: "Watch Now",
     },
   ];
 
@@ -116,6 +156,7 @@ const EventTimeline = () => {
                 {...event}
                 index={index}
                 totalEvents={events.length}
+                sessionnum={event.sessionnum}
               />
             ))}
           </div>
