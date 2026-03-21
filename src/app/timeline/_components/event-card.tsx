@@ -2,7 +2,7 @@
 
 import { Calendar, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { motion, number } from "framer-motion";
 import Link from "next/link";
 import LumaEmbed from "@/components/landing/lumaEmbed";
 import { createPortal } from "react-dom";
@@ -11,7 +11,8 @@ import { useState } from "react";
 interface EventCardProps {
   status?: "upcoming" | "past" | "Open";
   title: string;
-  description: string;
+  description: string,
+  sessionnum?:string,
   date: string;
   index: number;
   totalEvents: number;
@@ -22,9 +23,10 @@ interface EventCardProps {
 export const EventCard = ({
   status,
   title,
-  description,
   date,
   index,
+  description,
+  sessionnum,
   link,
   buttonText,
 }: EventCardProps) => {
@@ -182,16 +184,36 @@ export const EventCard = ({
             {title}
           </motion.h3>
 
-          <motion.p
-            initial={{ y: 20 }}
-            whileInView={{ y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className={`text-sm sm:text-base leading-relaxed mb-6 ${isActive ? "text-gray-400" : "text-gray-400/60"
-              }`}
-          >
-            {description}
-          </motion.p>
+          {sessionnum !== undefined && sessionnum!=="" && (
+  <motion.p
+    initial={{ y: 20 }}
+    whileInView={{ y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: 0.1 }}
+    className={`text-sm sm:text-base leading-relaxed mb-6 ${
+      isActive ? "text-gray-400" : "text-gray-400/60"
+    }`}
+  >
+    Speaker Session {sessionnum}
+  </motion.p>
+)}
+
+ {sessionnum !== undefined && sessionnum==="" && (
+  <motion.p
+    initial={{ y: 20 }}
+    whileInView={{ y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: 0.1 }}
+    className={`text-sm sm:text-base leading-relaxed mb-6 ${
+      isActive ? "text-gray-400" : "text-gray-400/60"
+    }`}
+  >
+    Orientation Session
+  </motion.p>
+)}
+
+
+
 
           {/* <motion.div 
           initial={{ y: 20 }}
@@ -218,27 +240,50 @@ export const EventCard = ({
           </div>
         </motion.div> */}
 
-          {status === "Open" && isActive && (
-            <motion.div
-              initial={{ scale: 0 }}
-              whileInView={{ scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {link ? (
-                <Link href={link} target="_blank" rel="noopener noreferrer">
-                  <Button className="font-semibold text-black bg-[#11D493] hover:bg-[#0fb883] rounded-lg px-6 py-2 transition-all duration-300 cursor-pointer">
-                    {buttonText || "Register Now"}
-                  </Button>
-                </Link>
-              ) : (
-                <Button className="font-semibold text-black bg-[#11D493] hover:bg-[#0fb883] rounded-lg px-6 py-2 transition-all duration-300 cursor-pointer" onClick={() => setOpen(true)}>
-                  {buttonText || "Register Now"}
-                </Button>
-              )}
-            </motion.div>
-          )}
+      <motion.p
+    initial={{ y: 20 }}
+    whileInView={{ y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: 0.1 }}
+    className={`text-sm sm:text-base leading-relaxed mb-6 ${
+      isActive ? "text-gray-400" : "text-gray-400/60"
+    }`}
+  >
+    {description}
+  </motion.p>
+
+ {(
+  (status === "past" && sessionnum !== undefined) ||
+  status === "Open" ||
+  status === "upcoming"
+) && (
+  <motion.div
+    initial={{ scale: 0 }}
+    whileInView={{ scale: 1 }}
+    viewport={{ once: true }}
+    transition={{ delay: 0.3 }}
+    whileTap={{ scale: 0.95 }}
+  >
+    {link ? (
+      <Link href={link} target="_blank" rel="noopener noreferrer">
+        <Button className="font-semibold text-black bg-[#11D493] hover:bg-[#0fb883] rounded-lg px-6 py-2 transition-all duration-300 cursor-pointer">
+          {sessionnum !== undefined
+            ? buttonText
+            : buttonText || "Register Now"}
+        </Button>
+      </Link>
+    ) : (
+      <Button
+        className="font-semibold text-black bg-[#11D493] hover:bg-[#0fb883] rounded-lg px-6 py-2 transition-all duration-300 cursor-pointer"
+        onClick={() => setOpen(true)}
+      >
+        {sessionnum !== undefined
+          ? `Session ${sessionnum}`
+          : buttonText || "Register Now"}
+      </Button>
+    )}
+  </motion.div>
+)}
         </motion.div>
       </motion.div >
       {modal}

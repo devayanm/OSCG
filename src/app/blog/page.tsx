@@ -102,19 +102,9 @@ const BlogPage = () => {
     };
 
     return (
-        <div className="min-h-screen text-white overflow-x-hidden selection:bg-[#00D6B2]/30">
-            <Navigation />
+        <div className="min-h-screen text-white overflow-x-hidden mt-[80px] selection:bg-[#00D6B2]/30">
 
-            {/* 
-
-
-*/}
-
-
-            <ComingSoon />
-
-            {/* Main Content Commented Out */}
-            {/* 
+            <Navigation/>            
                 <motion.div
                     className="text-center mb-16"
                     variants={containerVariants}
@@ -306,10 +296,6 @@ const BlogPage = () => {
                         </p>
                     </motion.div>
                 )}
-                */}
-
-
-
             <Footer />
         </div>
     );

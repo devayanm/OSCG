@@ -96,6 +96,13 @@ export const speakers: Speaker[] = [
     imagePosition: "object-[50%_75%] scale-150"
   },
   {
+    image: "/speakers/chikahiro-tokoro.png",
+    name: "Chikahiro Tokoro",
+    title: "Software Engineer, Podcaster",
+    expertise: "Database and Deployment expert",
+    linkedin: "https://www.linkedin.com/in/chikahiro/",
+  },
+  {
     image: "/speakers/Aarya.png",
     name: "Aarya Pandey",
     title: "Intel OpenVINO",
