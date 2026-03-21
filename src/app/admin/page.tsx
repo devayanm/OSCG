@@ -6,6 +6,8 @@ import {
 import { getAdminData } from "@/lib/actions/admin";
 import UserManagement from "@/components/admin/UserManagement";
 
+import SyncButton from "@/components/admin/SyncButton";
+
 export const metadata = {
   title: "Admin Command Center | OSCG",
 };
@@ -41,9 +43,12 @@ export default async function AdminDashboardPage({
 
   return (
     <div className="p-8 lg:p-10 space-y-8">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold text-white tracking-tight">Community Oversight</h1>
-        <p className="text-slate-400 font-medium">Manage OSCG participants and export data for email outreach.</p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-bold text-white tracking-tight">Community Oversight</h1>
+          <p className="text-slate-400 font-medium">Manage OSCG participants and export data for email outreach.</p>
+        </div>
+        <SyncButton />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

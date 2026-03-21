@@ -9,7 +9,17 @@ import { PROJECTS } from "@/data/projects";
  * and updates their profile and score in the database.
  */
 export async function syncGitHubContribution(userId: string, githubHandle: string) {
-    const normalizedHandle = githubHandle.toLowerCase().trim();
+    // Clean up the handle: remove @, whitespace, and extract from URL if present
+    let normalizedHandle = githubHandle.toLowerCase().trim().replace("@", "");
+
+    // Handle full URL case (e.g. https://github.com/username)
+    if (normalizedHandle.includes("github.com/")) {
+        const parts = normalizedHandle.split("github.com/");
+        if (parts.length > 1) {
+            normalizedHandle = parts[1].split("/")[0]; // Get the part after github.com/ and before next /
+        }
+    }
+
     if (!normalizedHandle) return { success: false, error: "No GitHub handle provided" };
 
     console.log(`[Sync] Starting sync for user: ${userId}, handle: ${normalizedHandle}`);
@@ -77,72 +87,101 @@ export async function syncGitHubContribution(userId: string, githubHandle: strin
         }
     }).filter(Boolean) as string[];
 
-    // 2. Fetch merged PRs for this user from GitHub API
-    // We search for PRs authored by the user that are merged.
-    // Note: For a real production app, you should use a GITHUB_TOKEN in env
-    // to avoid strict rate limits.
+    // Debug: Log parsed repos
+    console.log('[Sync] Competition Repos:', competitionRepos);
+
+    // 2. Fetch merged PRs and Assigned Issues from GitHub API
+    // We split this into two queries to avoid 422 "Validation Failed" (GitHub allows broad "involves" but sometimes restricts it).
+    // Query 1: Authored PRs that are closed
+    // Query 2: Assigned Issues that are closed
     const GITHUB_TOKEN = process.env.GITHUB_ACCESS_TOKEN;
+    const items: any[] = [];
+
+    const fetchAllItems = async (query: string) => {
+        const fetchedItems: any[] = [];
+        let page = 1;
+        const PER_PAGE = 100;
+        let hasNextPage = true;
+
+        while (hasNextPage) {
+            const searchUrl = `https://api.github.com/search/issues?q=${encodeURIComponent(query)}&per_page=${PER_PAGE}&page=${page}`;
+            console.log(`[Sync] Fetching ${query} Page ${page}`);
+
+            const response = await fetch(searchUrl, {
+                headers: GITHUB_TOKEN ? {
+                    Authorization: `token ${GITHUB_TOKEN}`,
+                    Accept: "application/vnd.github.v3+json",
+                } : {
+                    Accept: "application/vnd.github.v3+json",
+                },
+                next: { revalidate: 0 }
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                console.error(`[Sync] GitHub API Error for query "${query}":`, err);
+                if (page === 1) throw new Error("GitHub API Error");
+                break;
+            }
+
+            const searchData = await response.json();
+            const pageItems = searchData.items || [];
+            fetchedItems.push(...pageItems);
+
+            if (pageItems.length < PER_PAGE) {
+                hasNextPage = false;
+            } else {
+                page++;
+                if (page > 5) hasNextPage = false; // Safety cap
+            }
+            // Optional small delay
+            if (!GITHUB_TOKEN) await new Promise(res => setTimeout(res, 500));
+        }
+        return fetchedItems;
+    };
 
     try {
-        // Search Query: Involves the user (author or assignee), is closed, 
-        // across the entire account (we filter repos locally).
-        const query = `involves:${normalizedHandle.replace('@', '')} is:closed`;
-        const searchUrl = `https://api.github.com/search/issues?q=${encodeURIComponent(query)}&per_page=100`;
+        // Fetch PRs
+        const prQuery = `author:${normalizedHandle.replace('@', '')} type:pr is:closed`;
+        const prItems = await fetchAllItems(prQuery);
+        items.push(...prItems);
 
-        console.log(`[Sync] Fetching URL: ${searchUrl}`);
-        console.log(`[Sync] Token present: ${!!GITHUB_TOKEN}`);
+        // Fetch Issues
+        // Small delay between queries
+        await new Promise(res => setTimeout(res, 1000));
 
-        const response = await fetch(searchUrl, {
-            headers: GITHUB_TOKEN ? {
-                Authorization: `token ${GITHUB_TOKEN}`,
-                Accept: "application/vnd.github.v3+json",
-            } : {
-                Accept: "application/vnd.github.v3+json",
-            },
-            next: { revalidate: 0 } // No cache for immediate updates (Debugging)
-        });
+        const issueQuery = `assignee:${normalizedHandle.replace('@', '')} type:issue is:closed`;
+        const issueItems = await fetchAllItems(issueQuery);
+        items.push(...issueItems);
 
-        if (!response.ok) {
-            const err = await response.json();
-            console.error("GitHub API Error:", err);
-            return { success: false, error: "GitHub API rate limit or error" };
-        }
-
-        const searchData = await response.json();
-        const items = searchData.items || [];
-        console.log(`[Sync] Found ${items.length} items from GitHub.`);
+        console.log(`[Sync] Found Total ${items.length} items (PRs: ${prItems.length}, Issues: ${issueItems.length}) from GitHub.`);
 
         // 3. Process Items: Group by Repo & Item Type
         const prs: any[] = [];
         const issuesByRepo: Record<string, any[]> = {};
 
-        const competitionRepos = PROJECTS.map(p => {
-            try {
-                const url = p.githubRepo.trim().replace(/\/$/, "").replace(/\.git$/, "");
-                const parts = url.split("/");
-                if (parts.length >= 2) {
-                    const owner = parts[parts.length - 2].toLowerCase();
-                    const repo = parts[parts.length - 1].toLowerCase();
-                    return `${owner}/${repo}`;
-                }
-                return null;
-            } catch {
-                return null;
-            }
-        }).filter(Boolean) as string[];
+        console.log(`[Sync] Competition Repos (Count: ${competitionRepos.length}):`, competitionRepos.slice(0, 5));
 
-        // Debug: Log parsed repos to ensure Innovision is there
-        console.log('[Sync] Competition Repos:', competitionRepos);
 
         for (const item of items) {
             // Parse repo from URL (api.github.com/repos/OWNER/REPO/...)
             const repoUrl = (item.repository_url || "").toLowerCase();
             const repoSuffix = repoUrl.split("/repos/")[1];
 
-            // Debug: Log what we are checking against
-            // console.log(`[Sync] Checking Item: ${repoSuffix} | Included: ${competitionRepos.includes(repoSuffix)}`);
+            if (!repoSuffix) {
+                console.log(`[Sync] Skipping item: No repo suffix found. URL: ${repoUrl}`);
+                continue;
+            }
 
-            if (!repoSuffix || !competitionRepos.includes(repoSuffix)) continue;
+            if (!competitionRepos.includes(repoSuffix)) {
+                // specific debug for potential casing mismatches
+                const partialMatch = competitionRepos.find(r => r.includes(repoSuffix) || repoSuffix.includes(r));
+                if (partialMatch) {
+                    console.log(`[Sync] NEAR MISS: ${repoSuffix} vs ${partialMatch}`);
+                }
+                continue;
+            }
+
 
             const isPR = !!item.pull_request;
             const isAuthored = item.user?.login.toLowerCase() === normalizedHandle;
@@ -153,8 +192,12 @@ export async function syncGitHubContribution(userId: string, githubHandle: strin
             } else if (!isPR && isAssignee) {
                 if (!issuesByRepo[repoSuffix]) issuesByRepo[repoSuffix] = [];
                 issuesByRepo[repoSuffix].push(item);
+            } else {
+                console.log(`[Sync] Skipping valid repo item: Not authored PR or assigned issue. PR: ${isPR}, Authored: ${isAuthored}, Assignee: ${isAssignee}`);
             }
         }
+
+        console.log(`[Sync] Processed PRs: ${prs.length}`);
 
         let mergedCount = 0;
         const difficultyCounts: Record<string, number> = { easy: 0, med: 0, hard: 0, exp: 0 };
@@ -163,10 +206,10 @@ export async function syncGitHubContribution(userId: string, githubHandle: strin
         // Helper to extract difficulty from a context string
         const getDifficulty = (labels: string[], title: string, body: string) => {
             const context = [...labels, title.toLowerCase(), body.toLowerCase()].join(" ");
-            if (/expert|exp|advanced/.test(context)) return 'exp';
-            if (/hard|high/.test(context)) return 'hard';
-            if (/medium|med|intermediate|mid/.test(context)) return 'med';
-            if (/easy|beginner|starter/.test(context)) return 'easy';
+            if (/\b(expert|exp|advanced)\b/.test(context)) return 'exp';
+            if (/\b(hard|high)\b/.test(context)) return 'hard';
+            if (/\b(medium|med|intermediate|mid)\b/.test(context)) return 'med';
+            if (/\b(easy|beginner|starter)\b/.test(context)) return 'easy';
             return 'easy';
         };
 
@@ -180,7 +223,7 @@ export async function syncGitHubContribution(userId: string, githubHandle: strin
 
             // 2. Try to find a linked issue to inherit a higher difficulty
             // Look for "fixes #123" or similar in PR body
-            const linkedIssueMatch = (pr.body || "").match(/(?:fixes|closes|resolves)\s+#(\d+)/i);
+            const linkedIssueMatch = (pr.body || "").match(/(?:fixes|closes|resolves|linked to)\s+#(\d+)/i);
             const linkedIssueNumber = linkedIssueMatch ? parseInt(linkedIssueMatch[1]) : null;
 
             const repoIssues = issuesByRepo[pr.repoSuffix] || [];
@@ -214,15 +257,13 @@ export async function syncGitHubContribution(userId: string, githubHandle: strin
         console.log(`[Sync] Calculated Score: ${calculatedScore}, Merged PRs: ${mergedCount}`);
 
         // 5. Update Database
-        // We use Math.max to ensure that manual score updates by admins are preserved
-        // if the calculated score from GitHub is lower.
-        // Also ensure merged_prs and projects_count are updated.
+        // UPDATED: Removed Math.max() to allow scores to correct downwards if needed
         const { error } = await supabaseAdmin
             .from("profiles")
             .update({
                 merged_prs: mergedCount,
                 projects_count: projectsCount,
-                score: Math.max(profile?.score || 0, calculatedScore),
+                score: calculatedScore, // Direct assignment
                 updated_at: new Date().toISOString()
             })
             .eq("id", userId);
@@ -240,7 +281,7 @@ export async function syncGitHubContribution(userId: string, githubHandle: strin
                 mergedPRs: mergedCount,
                 projectsCount: projectsCount,
                 difficultyCounts,
-                score: Math.max(profile?.score || 0, calculatedScore)
+                score: calculatedScore
             }
         };
 

@@ -143,7 +143,8 @@ const EventTimeline = () => {
             Event <span className="text-[#4FD1D0]">Timeline</span>
           </h2>
           <p className="text-gray-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto mt-4 px-4">
-            Join us at upcoming events and workshops designed to inspire and connect developers.
+            Join us at upcoming events and workshops designed to inspire and
+            connect developers.
           </p>
         </div>
 
