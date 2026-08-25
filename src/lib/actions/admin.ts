@@ -7,14 +7,16 @@ export async function getAdminData(
   page: number = 1,
   pageSize: number = 30,
   searchTerm: string = "",
-  role: string = "all"
+  role: string = "all",
 ) {
   const supabase = await createClient();
 
   let query = supabase.from("profiles").select("*", { count: "exact" });
 
   if (searchTerm) {
-    query = query.or(`full_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`);
+    query = query.or(
+      `full_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`,
+    );
   }
 
   if (role !== "all") {
@@ -24,9 +26,11 @@ export async function getAdminData(
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
-  const { data: users, count: totalUsers, error: usersError } = await query
-    .order("updated_at", { ascending: false })
-    .range(from, to);
+  const {
+    data: users,
+    count: totalUsers,
+    error: usersError,
+  } = await query.order("updated_at", { ascending: false }).range(from, to);
 
   if (usersError) {
     console.error("Error fetching users:", usersError);
@@ -52,7 +56,6 @@ export async function getAdminData(
     score?: number;
   }
 
-
   return {
     stats: {
       totalUsers: totalUsers || 0,
@@ -66,7 +69,9 @@ import { revalidatePath } from "next/cache";
 
 export async function updateUserRole(userId: string, role: string) {
   const supabase = await createClient();
-  const { data: { user: requester } } = await supabase.auth.getUser();
+  const {
+    data: { user: requester },
+  } = await supabase.auth.getUser();
 
   if (!requester) {
     return { success: false, error: "Authentication required" };
@@ -101,7 +106,9 @@ export async function updateUserRole(userId: string, role: string) {
     return { success: false, error: error.message };
   }
 
-  console.log(`[AUDIT] Role Updated: Super Admin ${requester.email} changed User ${userId} role to ${role}`);
+  console.log(
+    `[AUDIT] Role Updated: Super Admin ${requester.email} changed User ${userId} role to ${role}`,
+  );
   revalidatePath("/admin");
   return { success: true };
 }
@@ -110,7 +117,9 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export async function updateUserScore(userId: string, score: number) {
   const supabase = await createClient();
-  const { data: { user: requester } } = await supabase.auth.getUser();
+  const {
+    data: { user: requester },
+  } = await supabase.auth.getUser();
 
   if (!requester) {
     return { success: false, error: "Authentication required" };
@@ -123,7 +132,11 @@ export async function updateUserScore(userId: string, score: number) {
     .eq("id", requester.id)
     .single();
 
-  if (!requesterProfile?.is_admin && requesterProfile?.role !== "admin" && requesterProfile?.role !== "project-admin") {
+  if (
+    !requesterProfile?.is_admin &&
+    requesterProfile?.role !== "admin" &&
+    requesterProfile?.role !== "project-admin"
+  ) {
     return { success: false, error: "Unauthorized: Admin privileges required" };
   }
 
@@ -139,8 +152,15 @@ export async function updateUserScore(userId: string, score: number) {
     .eq("id", userId)
     .single();
 
-  if (targetProfile?.is_admin || targetProfile?.role === "admin" || targetProfile?.role === "project-admin") {
-    return { success: false, error: "Scores cannot be assigned to administrative roles." };
+  if (
+    targetProfile?.is_admin ||
+    targetProfile?.role === "admin" ||
+    targetProfile?.role === "project-admin"
+  ) {
+    return {
+      success: false,
+      error: "Scores cannot be assigned to administrative roles.",
+    };
   }
 
   // Use admin client to bypass RLS for updating scores
@@ -148,8 +168,8 @@ export async function updateUserScore(userId: string, score: number) {
     .from("profiles")
     .update({
       score,
-      merged_prs: targetProfile?.role === 'contributor' ? undefined : 0, // Ensure PRs are 0 if role changed
-      updated_at: new Date().toISOString()
+      merged_prs: targetProfile?.role === "contributor" ? undefined : 0, // Ensure PRs are 0 if role changed
+      updated_at: new Date().toISOString(),
     })
     .eq("id", userId)
     .select();
@@ -164,7 +184,9 @@ export async function updateUserScore(userId: string, score: number) {
     return { success: false, error: "Profile not found or no update applied" };
   }
 
-  console.log(`[AUDIT] Score Updated: Admin ${requester.email} (${requester.id}) set score for User ${userId} to ${score}. Status: ${status}`);
+  console.log(
+    `[AUDIT] Score Updated: Admin ${requester.email} (${requester.id}) set score for User ${userId} to ${score}. Status: ${status}`,
+  );
   return { success: true };
 }
 
@@ -191,7 +213,9 @@ export async function syncAllUsers() {
       const user = users[i];
 
       if (user.github) {
-        console.log(`[AdminSync] Syncing user ${i + 1}/${users.length}: ${user.github}`);
+        console.log(
+          `[AdminSync] Syncing user ${i + 1}/${users.length}: ${user.github}`,
+        );
         try {
           const result = await syncGitHubContribution(user.id, user.github);
           if (result.success) successCount++;
@@ -203,12 +227,11 @@ export async function syncAllUsers() {
       }
 
       if (i + 1 < users.length) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       }
     }
 
     return { success: true, count: users.length, successCount, failCount };
-
   } catch (error) {
     console.error("[AdminSync] Error:", error);
     return { success: false, error: "Failed to sync users" };
@@ -224,11 +247,11 @@ export async function syncUser(userId: string) {
       .single();
 
     if (error || !user) throw new Error("User not found");
-    if (!user.github) return { success: false, error: "User has no GitHub handle linked" };
+    if (!user.github)
+      return { success: false, error: "User has no GitHub handle linked" };
 
     const result = await syncGitHubContribution(user.id, user.github);
     return result;
-
   } catch (error: any) {
     console.error("[AdminSync] Single User Error:", error);
     return { success: false, error: error.message || "Failed to sync user" };

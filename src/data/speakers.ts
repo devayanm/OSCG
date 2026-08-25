@@ -67,11 +67,11 @@ export const speakers: Speaker[] = [
     linkedin: "https://www.linkedin.com/in/mesutdurukal?originalSubdomain=jp"
   },
   {
-    image: "/speakers/Prasad.png",
-    name: "Prasad Sawant",
-    title: "Co-Founder at LetsUpgrade",
-    expertise: "EdTech Entrepreneur",
-    linkedin: "https://www.linkedin.com/in/prasadsawant97/"
+    image: "/speakers/Ekaterina.png",
+    name: "Ekaterina Maevskaia",
+    title: "Growth Leader at Snap Inc. & TikTok",
+    expertise: "Revenue and Growth Leader",
+    linkedin: "https://www.linkedin.com/in/katia-maevskaia/"
   },
   {
     image: "/speakers/shedrack.jpg",
@@ -110,11 +110,11 @@ export const speakers: Speaker[] = [
     linkedin: "https://www.linkedin.com/in/aaryavjti/?originalSubdomain=in"
   },
   {
-    image: "/speakers/Praneetha.png",
-    name: "Praneetha Kotla",
-    title: "Lead Robotic Process Automation Developer",
-    expertise: "ERP Smartlabs",
-    linkedin: "https://www.linkedin.com/in/praneetha-kotla/"
+    image: "/speakers/Kateryna.png",
+    name: "Kateryna Tertiienko",
+    title: "Technical Lead at Infonetica",
+    expertise: "Technology Leader and Self Learner with over 20 Years of Experience",
+    linkedin: "https://www.linkedin.com/in/kate-tertiienko-1536663/"
   },
   {
     image: "/speakers/yash.jpg",

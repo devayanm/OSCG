@@ -1,8 +1,5 @@
 import { Suspense } from "react";
-import {
-  Users,
-  ShieldAlert,
-} from "lucide-react";
+import { Users, ShieldAlert } from "lucide-react";
 import { getAdminData } from "@/lib/actions/admin";
 import UserManagement from "@/components/admin/UserManagement";
 
@@ -34,7 +31,9 @@ export default async function AdminDashboardPage({
           <ShieldAlert className="w-8 h-8 text-red-500" />
         </div>
         <h2 className="text-2xl font-bold text-white mb-2">Connection Error</h2>
-        <p className="text-slate-400 max-w-md">Failed to connect to the participant database.</p>
+        <p className="text-slate-400 max-w-md">
+          Failed to connect to the participant database.
+        </p>
       </div>
     );
   }
@@ -45,8 +44,12 @@ export default async function AdminDashboardPage({
     <div className="p-8 lg:p-10 space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-bold text-white tracking-tight">Community Oversight</h1>
-          <p className="text-slate-400 font-medium">Manage OSCG participants and export data for email outreach.</p>
+          <h1 className="text-3xl font-bold text-white tracking-tight">
+            Community Oversight
+          </h1>
+          <p className="text-slate-400 font-medium">
+            Manage OSCG participants and export data for email outreach.
+          </p>
         </div>
         <SyncButton />
       </div>
@@ -60,13 +63,14 @@ export default async function AdminDashboardPage({
         />
       </div>
 
-
       <div className="pt-4">
-        <Suspense fallback={
-          <div className="w-full h-64 bg-[#0B0F17]/50 rounded-2xl border border-white/5 flex items-center justify-center text-slate-500">
-            Loading participants...
-          </div>
-        }>
+        <Suspense
+          fallback={
+            <div className="w-full h-64 bg-[#0B0F17]/50 rounded-2xl border border-white/5 flex items-center justify-center text-slate-500">
+              Loading participants...
+            </div>
+          }
+        >
           <UserManagement
             initialUsers={users}
             totalCount={stats.totalUsers}
@@ -81,11 +85,16 @@ export default async function AdminDashboardPage({
   );
 }
 
-function StatCard({ title, value, icon, description }: {
-  title: string,
-  value: string,
-  icon: React.ReactNode,
-  description: string
+function StatCard({
+  title,
+  value,
+  icon,
+  description,
+}: {
+  title: string;
+  value: string;
+  icon: React.ReactNode;
+  description: string;
 }) {
   return (
     <div className="bg-[#0B0F17] p-6 rounded-2xl border border-white/5 hover:border-white/10 transition-all group">
@@ -94,9 +103,15 @@ function StatCard({ title, value, icon, description }: {
           {icon}
         </div>
         <div>
-          <h3 className="text-slate-500 text-[11px] font-bold uppercase tracking-widest leading-none mb-2">{title}</h3>
-          <p className="text-2xl font-bold text-white leading-none tracking-tight">{value}</p>
-          <p className="text-slate-600 text-[11px] mt-2 font-medium">{description}</p>
+          <h3 className="text-slate-500 text-[11px] font-bold uppercase tracking-widest leading-none mb-2">
+            {title}
+          </h3>
+          <p className="text-2xl font-bold text-white leading-none tracking-tight">
+            {value}
+          </p>
+          <p className="text-slate-600 text-[11px] mt-2 font-medium">
+            {description}
+          </p>
         </div>
       </div>
     </div>
