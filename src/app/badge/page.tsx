@@ -1057,3 +1057,4 @@ export default function BadgePage() {
     </main>
   );
 }
+
